@@ -425,17 +425,21 @@ class IndicatorStatusIcon extends BaseStatusIcon {
 
         if (event.get_button() === Clutter.BUTTON_SECONDARY) {
             this.menu.toggle();
-            return Clutter.EVENT_PROPAGATE;
+            return Clutter.EVENT_STOP;
         }
 
         const doubleClickHandled = this._maybeHandleDoubleClick(event);
         if (doubleClickHandled === Clutter.EVENT_PROPAGATE &&
-            event.get_button() === Clutter.BUTTON_PRIMARY &&
-            this.menu.numMenuItems) {
-            if (this._indicator.supportsActivation !== false)
-                this._waitForDoubleClick().catch(logError);
-            else
+            event.get_button() === Clutter.BUTTON_PRIMARY) {
+            // 左键点击时，优先尝试打开应用本身
+            if (this._indicator.supportsActivation !== false) {
+                this._indicator.open(...event.get_coords(), event.get_time());
+                return Clutter.EVENT_STOP;
+            } else if (this.menu.numMenuItems) {
+                // 如果应用不支持左键点击直接打开，则显示应用菜单
                 this.menu.toggle();
+                return Clutter.EVENT_STOP;
+            }
         }
 
         return Clutter.EVENT_PROPAGATE;
