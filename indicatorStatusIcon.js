@@ -428,14 +428,12 @@ class IndicatorStatusIcon extends BaseStatusIcon {
             return Clutter.EVENT_STOP;
         }
 
-        const doubleClickHandled = this._maybeHandleDoubleClick(event);
-        if (doubleClickHandled === Clutter.EVENT_PROPAGATE &&
-            event.get_button() === Clutter.BUTTON_PRIMARY) {
-            const settings = SettingsManager.getDefaultGSettings();
-            const leftClickAction = settings.get_boolean("left-click-open-app-enabled");
-            
+        const settings = SettingsManager.getDefaultGSettings();
+        const leftClickAction = settings.get_boolean("left-click-open-app-enabled");
+
+        if (event.get_button() === Clutter.BUTTON_PRIMARY) {
             if (leftClickAction) {
-                // 当启用新功能时，左键点击尝试打开应用本身
+                // 当启用新功能时，左键单击直接打开应用本体，并屏蔽双击事件
                 if (this._indicator.supportsActivation !== false) {
                     this._indicator.open(...event.get_coords(), event.get_time());
                     return Clutter.EVENT_STOP;
@@ -444,10 +442,17 @@ class IndicatorStatusIcon extends BaseStatusIcon {
                     this.menu.toggle();
                     return Clutter.EVENT_STOP;
                 }
-            } else if (this.menu.numMenuItems) {
-                // 当禁用新功能时，保持原有行为，只显示应用菜单
-                this.menu.toggle();
-                return Clutter.EVENT_STOP;
+            } else {
+                // 当禁用新功能时，保持原有行为
+                const doubleClickHandled = this._maybeHandleDoubleClick(event);
+                if (doubleClickHandled === Clutter.EVENT_PROPAGATE) {
+                    // 如果双击未被处理，则显示应用菜单
+                    if (this.menu.numMenuItems) {
+                        this._waitForDoubleClick().catch(logError);
+                        return Clutter.EVENT_STOP;
+                    }
+                }
+                return doubleClickHandled;
             }
         }
 
