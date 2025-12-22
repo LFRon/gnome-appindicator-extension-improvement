@@ -50,6 +50,21 @@ class AppIndicatorGeneralPage extends Adw.PreferencesPage {
 
         this.group.add(compactModeSwitch);
 
+        const leftClickActionSwitch = new Adw.SwitchRow({
+            title: 'Left Click Action',
+            subtitle: 'When enabled, left-clicking the tray icon will try to open the application itself first',
+            active: this._settings.get_boolean(this._settingsKey.LEFT_CLICK_OPEN_APP_ENABLED),
+        });
+
+        leftClickActionSwitch.connect('notify::active', widget =>
+            this._settings.set_boolean(
+                this._settingsKey.LEFT_CLICK_OPEN_APP_ENABLED,
+                widget.get_active()
+            )
+        );
+
+        this.group.add(leftClickActionSwitch);
+
         this._createSpinRow({
             title: _('Opacity'),
             settingsKey: this._settingsKey.ICON_OPACITY,

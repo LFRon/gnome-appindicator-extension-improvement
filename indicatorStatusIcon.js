@@ -431,12 +431,21 @@ class IndicatorStatusIcon extends BaseStatusIcon {
         const doubleClickHandled = this._maybeHandleDoubleClick(event);
         if (doubleClickHandled === Clutter.EVENT_PROPAGATE &&
             event.get_button() === Clutter.BUTTON_PRIMARY) {
-            // 左键点击时，优先尝试打开应用本身
-            if (this._indicator.supportsActivation !== false) {
-                this._indicator.open(...event.get_coords(), event.get_time());
-                return Clutter.EVENT_STOP;
+            const settings = SettingsManager.getDefaultGSettings();
+            const leftClickAction = settings.get_boolean("left-click-open-app-enabled");
+            
+            if (leftClickAction) {
+                // 当启用新功能时，左键点击尝试打开应用本身
+                if (this._indicator.supportsActivation !== false) {
+                    this._indicator.open(...event.get_coords(), event.get_time());
+                    return Clutter.EVENT_STOP;
+                } else if (this.menu.numMenuItems) {
+                    // 如果应用不支持左键点击直接打开，则显示应用菜单
+                    this.menu.toggle();
+                    return Clutter.EVENT_STOP;
+                }
             } else if (this.menu.numMenuItems) {
-                // 如果应用不支持左键点击直接打开，则显示应用菜单
+                // 当禁用新功能时，保持原有行为，只显示应用菜单
                 this.menu.toggle();
                 return Clutter.EVENT_STOP;
             }

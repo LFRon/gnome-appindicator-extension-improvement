@@ -30,6 +30,11 @@
       <summary>Compact Mode</summary>
       <description>Reduces the Spacing Between Indicators</description>
     </key>
+    <key name="left-click-open-app-enabled" type="b">
+      <default>false</default>
+      <summary>Left Click Open App</summary>
+      <description>When enabled, left-clicking the tray icon will try to open the application itself first, then fall back to showing the app menu if the application doesn't support this action</description>
+    </key>
     <key name="tray-pos" type="s">
       <default>"right"</default>
       <summary>Position in tray</summary>
