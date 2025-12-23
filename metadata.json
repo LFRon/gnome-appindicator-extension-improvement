@@ -8,7 +8,7 @@
     ],
     "gettext-domain": "AppIndicatorExtension",
     "settings-schema": "org.gnome.shell.extensions.appindicator",
-    "uuid": "appindicatorsupport@rgcjonas.gmail.com",
+    "uuid": "appindicatorsupport@mozixun",
     "name": "AppIndicator and KStatusNotifierItem Improved",
     "description": "Adds AppIndicator, KStatusNotifierItem and legacy Tray icons support to the Shell, also reliaze compact mode and left-click to show the app itself if supported",
     "url": "https://github.com/LFRon/gnome-appindicator-extension-improvement"
